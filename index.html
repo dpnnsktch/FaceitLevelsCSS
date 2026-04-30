@@ -1,96 +1,150 @@
-<svg width="250" height="50" viewBox="0 0 250 50" fill="none" xmlns="http://w3.org">
-    <foreignObject width="100%" height="100%">
-        <div xmlns="http://w3.org">
-            <style>
-                @import url('https://googleapis.com');
-                
-                .badge-wrapper { 
-                    display: flex; 
-                    align-items: center; 
-                    gap: 12px; 
-                    height: 50px; 
-                    background-color: white; 
-                    font-family: 'Roboto', sans-serif;
-                }
-                .faceit-circle {
-                    position: relative;
-                    width: 40px;
-                    height: 40px;
-                    background: #1e1e1e;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-                .ring-bg {
-                    position: absolute;
-                    inset: 4px;
-                    border-radius: 50%;
-                    border: 3.5px solid #2d2d2d;
-                    box-sizing: border-box;
-                }
-                .ring-active {
-                    position: absolute;
-                    inset: 4px;
-                    border-radius: 50%;
-                    border: 3.5px solid transparent;
-                    border-top-color: var(--color);
-                    border-right-color: var(--color);
-                    transform: rotate(var(--rot));
-                    box-sizing: border-box;
-                }
-                .lvl-display {
-                    color: var(--color);
-                    font-weight: 900;
-                    font-size: 16px;
-                    transform: skewX(-10deg);
-                    z-index: 10;
-                }
-                .text-info { font-weight: 700; font-size: 16px; color: black; }
-                .elo-info { color: #8e8e8e; font-weight: 400; font-size: 14px; margin-left: 4px; }
-            </style>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        :root {
+            --bg-circle: #1e1e1e;
+            --ring-empty: #2d2d2d;
+            --lvl-10: #ff1a1a;
+            --lvl-8-9: #ff7b00;
+            --lvl-4-7: #ffb800;
+            --lvl-2-3: #00ff7f;
+            --lvl-1: #ffffff;
+        }
 
-            <div class="badge-wrapper" id="root">
-                <div class="faceit-circle">
-                    <div class="ring-bg"></div>
-                    <div class="ring-active"></div>
-                    <div class="lvl-display" id="lvl-val">7</div>
-                </div>
-                <div class="text-info">
-                    Level <span id="lvl-txt">7</span>
-                    <span class="elo-info" id="elo-val">1530 ELO</span>
-                </div>
-            </div>
+        body {
+            background-color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            padding: 20px;
+        }
 
-            <script type="text/javascript"><![CDATA[
-                const params = new URLSearchParams(window.location.search);
-                const lvl = params.get('lvl') || "7";
-                const elo = params.get('elo') || "1500";
-                
-                const colors = {
-                    "10": "#ff1a1a", "9": "#ff7b00", "8": "#ff7b00", "7": "#ffb800",
-                    "6": "#ffb800", "5": "#ffb800", "4": "#ffb800", "3": "#00ff7f",
-                    "2": "#00ff7f", "1": "#ffffff"
-                };
+        .ranks-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-                const rotations = {
-                    "10": "0deg", "9": "45deg", "8": "10deg", "7": "45deg", 
-                    "6": "10deg", "5": "-20deg", "4": "-50deg", "3": "0deg", "2": "-20deg", "1": "0deg"
-                };
+        .rank-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
 
-                const color = colors[lvl] || "#fff";
-                const rot = rotations[lvl] || "0deg";
-                const root = document.getElementById('root');
-                
-                if (root) {
-                    root.style.setProperty('--color', color);
-                    root.style.setProperty('--rot', rot);
-                    document.getElementById('lvl-val').textContent = lvl;
-                    document.getElementById('lvl-txt').textContent = lvl;
-                    document.getElementById('elo-val').textContent = elo + " ELO";
-                }
-            ]]></script>
-        </div>
-    </foreignObject>
-</svg>
+        /* Основа иконки */
+        .faceit-icon {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            background-color: var(--bg-circle);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Слой кольца */
+        .ring {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        /* Центральная заглушка */
+        .center-hole {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: var(--bg-circle);
+            border-radius: 50%;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .num {
+            font-size: 14px;
+            font-weight: 700;
+            transform: skewX(-5deg);
+        }
+
+        /* Текстовая информация рядом */
+        .info { font-size: 16px; font-weight: 700; color: #000; }
+        .elo { color: #8e8e8e; font-weight: 400; font-size: 14px; margin-left: 5px; }
+
+        /* Логика дуг для каждого уровня */
+        /* Поворот -235deg ставит разрыв кольца ровно вниз */
+        .lvl-10 .ring { background: var(--lvl-10); }
+        .lvl-9 .ring { background: conic-gradient(var(--lvl-8-9) 250deg, var(--ring-empty) 0 310deg, transparent 0); transform: rotate(-235deg); }
+        .lvl-8 .ring { background: conic-gradient(var(--lvl-8-9) 180deg, var(--ring-empty) 0 310deg, transparent 0); transform: rotate(-235deg); }
+        .lvl-7 .ring { background: conic-gradient(var(--lvl-4-7) 250deg, var(--ring-empty) 0 310deg, transparent 0); transform: rotate(-235deg); }
+        .lvl-6 .ring { background: conic-gradient(var(--lvl-4-7) 180deg, var(--ring-empty) 0 310deg, transparent 0); transform: rotate(-235deg); }
+        .lvl-5 .ring { background: conic-gradient(var(--lvl-4-7) 120deg, var(--ring-empty) 0 310deg, transparent 0); transform: rotate(-235deg); }
+        .lvl-4 .ring { background: conic-gradient(var(--lvl-4-7) 60deg, var(--ring-empty) 0 310deg, transparent 0); transform: rotate(-235deg); }
+        .lvl-3 .ring { background: conic-gradient(var(--lvl-2-3) 90deg, var(--ring-empty) 0 310deg, transparent 0); transform: rotate(-235deg); }
+        .lvl-2 .ring { background: conic-gradient(var(--lvl-2-3) 45deg, var(--ring-empty) 0 310deg, transparent 0); transform: rotate(-235deg); }
+        .lvl-1 .ring { background: var(--ring-empty); }
+
+        /* Цвет цифр */
+        .lvl-10 .num { color: var(--lvl-10); }
+        .lvl-8 .num, .lvl-9 .num { color: var(--lvl-8-9); }
+        .lvl-4 .num, .lvl-5 .num, .lvl-6 .num, .lvl-7 .num { color: var(--lvl-4-7); }
+        .lvl-2 .num, .lvl-3 .num { color: var(--lvl-2-3); }
+        .lvl-1 .num { color: #fff; }
+        .lvl-1 .center-hole::before { content: ''; position: absolute; left: 4px; bottom: 5px; width: 3px; height: 3px; background: #fff; border-radius: 50%; }
+
+    </style>
+</head>
+<body>
+
+<div class="ranks-container">
+    <div class="rank-row lvl-10">
+        <div class="faceit-icon"><div class="ring"></div><div class="center-hole"><span class="num">10</span></div></div>
+        <div class="info">Level 10 <span class="elo">2001 +</span></div>
+    </div>
+    <div class="rank-row lvl-9">
+        <div class="faceit-icon"><div class="ring"></div><div class="center-hole"><span class="num">9</span></div></div>
+        <div class="info">Level 9 <span class="elo">1751 - 2000</span></div>
+    </div>
+    <div class="rank-row lvl-8">
+        <div class="faceit-icon"><div class="ring"></div><div class="center-hole"><span class="num">8</span></div></div>
+        <div class="info">Level 8 <span class="elo">1531 - 1750</span></div>
+    </div>
+    <div class="rank-row lvl-7">
+        <div class="faceit-icon"><div class="ring"></div><div class="center-hole"><span class="num">7</span></div></div>
+        <div class="info">Level 7 <span class="elo">1351 - 1530</span></div>
+    </div>
+    <div class="rank-row lvl-6">
+        <div class="faceit-icon"><div class="ring"></div><div class="center-hole"><span class="num">6</span></div></div>
+        <div class="info">Level 6 <span class="elo">1201 - 1350</span></div>
+    </div>
+    <div class="rank-row lvl-5">
+        <div class="faceit-icon"><div class="ring"></div><div class="center-hole"><span class="num">5</span></div></div>
+        <div class="info">Level 5 <span class="elo">1051 - 1200</span></div>
+    </div>
+    <div class="rank-row lvl-4">
+        <div class="faceit-icon"><div class="ring"></div><div class="center-hole"><span class="num">4</span></div></div>
+        <div class="info">Level 4 <span class="elo">901 - 1050</span></div>
+    </div>
+    <div class="rank-row lvl-3">
+        <div class="faceit-icon"><div class="ring"></div><div class="center-hole"><span class="num">3</span></div></div>
+        <div class="info">Level 3 <span class="elo">751 - 900</span></div>
+    </div>
+    <div class="rank-row lvl-2">
+        <div class="faceit-icon"><div class="ring"></div><div class="center-hole"><span class="num">2</span></div></div>
+        <div class="info">Level 2 <span class="elo">501 - 750</span></div>
+    </div>
+    <div class="rank-row lvl-1">
+        <div class="faceit-icon"><div class="ring"></div><div class="center-hole"><span class="num">1</span></div></div>
+        <div class="info" style="color: #801a24">Level 1 <span class="elo">100 - 500</span></div>
+    </div>
+</div>
+
+</body>
+</html>
 
