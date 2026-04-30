@@ -80,13 +80,15 @@
                 const rot = rotations[lvl] || "0deg";
                 const root = document.getElementById('root');
                 
-                root.style.setProperty('--color', color);
-                root.style.setProperty('--rot', rot);
-                
-                document.getElementById('lvl-val').textContent = lvl;
-                document.getElementById('lvl-txt').textContent = lvl;
-                document.getElementById('elo-val').textContent = elo + " ELO";
+                if (root) {
+                    root.style.setProperty('--color', color);
+                    root.style.setProperty('--rot', rot);
+                    document.getElementById('lvl-val').textContent = lvl;
+                    document.getElementById('lvl-txt').textContent = lvl;
+                    document.getElementById('elo-val').textContent = elo + " ELO";
+                }
             ]]></script>
         </div>
     </foreignObject>
 </svg>
+
