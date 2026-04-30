@@ -32,7 +32,7 @@
             gap: 15px;
         }
 
-        /* Основа иконки */
+       
         .faceit-icon {
             position: relative;
             width: 40px;
@@ -54,7 +54,7 @@
             z-index: 1;
         }
 
-        /* Центральная заглушка */
+        
         .center-hole {
             position: absolute;
             width: 24px;
@@ -73,12 +73,10 @@
             transform: skewX(-5deg);
         }
 
-        /* Текстовая информация рядом */
+        
         .info { font-size: 16px; font-weight: 700; color: #000; }
         .elo { color: #8e8e8e; font-weight: 400; font-size: 14px; margin-left: 5px; }
 
-        /* Логика дуг для каждого уровня */
-        /* Поворот -235deg ставит разрыв кольца ровно вниз */
         .lvl-10 .ring { background: var(--lvl-10); }
         .lvl-9 .ring { background: conic-gradient(var(--lvl-8-9) 250deg, var(--ring-empty) 0 310deg, transparent 0); transform: rotate(-235deg); }
         .lvl-8 .ring { background: conic-gradient(var(--lvl-8-9) 180deg, var(--ring-empty) 0 310deg, transparent 0); transform: rotate(-235deg); }
@@ -90,7 +88,7 @@
         .lvl-2 .ring { background: conic-gradient(var(--lvl-2-3) 45deg, var(--ring-empty) 0 310deg, transparent 0); transform: rotate(-235deg); }
         .lvl-1 .ring { background: var(--ring-empty); }
 
-        /* Цвет цифр */
+      
         .lvl-10 .num { color: var(--lvl-10); }
         .lvl-8 .num, .lvl-9 .num { color: var(--lvl-8-9); }
         .lvl-4 .num, .lvl-5 .num, .lvl-6 .num, .lvl-7 .num { color: var(--lvl-4-7); }
