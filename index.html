@@ -2,25 +2,65 @@
     <foreignObject width="100%" height="100%">
         <div xmlns="http://w3.org">
             <style>
-                .container { display: flex; align-items: center; font-family: 'Segoe UI', Roboto, sans-serif; gap: 12px; height: 50px; background: white; }
-                .icon-box { position: relative; width: 40px; height: 40px; background: #1e1e1e; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-                .ring-base { position: absolute; inset: 4px; border-radius: 50%; border: 3px solid #2d2d2d; box-sizing: border-box; }
-                .ring-fill { position: absolute; inset: 4px; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--lvl-color); box-sizing: border-box; transform: rotate(var(--rotation)); }
-                .lvl-val { color: var(--lvl-color); font-weight: bold; font-size: 15px; transform: skewX(-10deg); z-index: 2; }
-                .text-data { font-weight: bold; font-size: 16px; color: #000; }
-                .elo-val { color: #8e8e8e; font-weight: normal; font-size: 14px; margin-left: 5px; }
+                @import url('https://googleapis.com');
+                
+                .badge-wrapper { 
+                    display: flex; 
+                    align-items: center; 
+                    gap: 12px; 
+                    height: 50px; 
+                    background-color: white; 
+                    font-family: 'Roboto', sans-serif;
+                }
+                .faceit-circle {
+                    position: relative;
+                    width: 40px;
+                    height: 40px;
+                    background: #1e1e1e;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .ring-bg {
+                    position: absolute;
+                    inset: 4px;
+                    border-radius: 50%;
+                    border: 3.5px solid #2d2d2d;
+                }
+                .ring-active {
+                    position: absolute;
+                    inset: 4px;
+                    border-radius: 50%;
+                    border: 3.5px solid transparent;
+                    border-top-color: var(--color);
+                    border-right-color: var(--color);
+                    transform: rotate(var(--rot));
+                }
+                .lvl-display {
+                    color: var(--color);
+                    font-weight: 900;
+                    font-size: 16px;
+                    transform: skewX(-10deg);
+                    z-index: 10;
+                }
+                .text-info { font-weight: 700; font-size: 16px; color: black; }
+                .elo-info { color: #8e8e8e; font-weight: 400; font-size: 14px; margin-left: 4px; }
             </style>
 
-            <div class="container" id="target">
-                <div class="icon-box">
-                    <div class="ring-base"></div>
-                    <div class="ring-fill" id="ring"></div>
-                    <div class="lvl-val" id="lvl-num">7</div>
+            <div class="badge-wrapper" id="root">
+                <div class="faceit-circle">
+                    <div class="ring-bg"></div>
+                    <div class="ring-active" id="visual-ring"></div>
+                    <div class="lvl-display" id="lvl-val">7</div>
                 </div>
-                <div class="text-data">Level <span id="lvl-txt">7</span> <span class="elo-val" id="elo-txt">1530 ELO</span></div>
+                <div class="text-info">
+                    Level <span id="lvl-txt">7</span>
+                    <span class="elo-info" id="elo-val">1530 ELO</span>
+                </div>
             </div>
 
-            <script><![CDATA[
+            <script type="text/javascript"><![CDATA[
                 const params = new URLSearchParams(window.location.search);
                 const lvl = params.get('lvl') || "7";
                 const elo = params.get('elo') || "1500";
@@ -31,17 +71,24 @@
                     "2": "#00ff7f", "1": "#ffffff"
                 };
 
+                // Углы поворота для дуги (имитация заполнения)
+                const rotations = {
+                    "10": "0deg", "9": "45deg", "8": "10deg", "7": "45deg", 
+                    "6": "10deg", "5": "-20deg", "4": "-50deg", "3": "0deg", "2": "-20deg"
+                };
+
                 const color = colors[lvl] || "#fff";
-                const root = document.getElementById('target');
+                const rot = rotations[lvl] || "0deg";
+                const root = document.getElementById('root');
                 
-                // Применяем переменные напрямую в CSS
-                root.style.setProperty('--lvl-color', color);
-                root.style.setProperty('--rotation', (lvl * 36) + 'deg');
+                root.style.setProperty('--color', color);
+                root.style.setProperty('--rot', rot);
                 
-                document.getElementById('lvl-num').textContent = lvl;
+                document.getElementById('lvl-val').textContent = lvl;
                 document.getElementById('lvl-txt').textContent = lvl;
-                document.getElementById('elo-txt').textContent = elo + " ELO";
+                document.getElementById('elo-val').textContent = elo + " ELO";
             ]]></script>
         </div>
     </foreignObject>
 </svg>
+
