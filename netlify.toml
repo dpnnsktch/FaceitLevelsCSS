@@ -2,4 +2,3 @@
   for = "/*"
   [headers.values]
     Content-Type = "image/svg+xml"
-    Cache-Control = "no-cache"
