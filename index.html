@@ -1,105 +1,47 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>CSS WORLD DESIGN</title>
-    <style>
-        body { font-family: sans-serif; background: #f0f0f0; padding: 20px; color: #333; }
-        .grid { display: flex; flex-direction: column; gap: 15px; max-width: 800px; margin: 0 auto; }
-        .card { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 20px; }
-        .copy-input { font-family: monospace; background: #f9f9f9; padding: 8px; font-size: 12px; border: 1px solid #ddd; width: 100%; border-radius: 4px; cursor: pointer; }
-        .hidden { display: none !important; }
-        h1 { text-align: center; }
-    </style>
-</head>
-<body>
-
-    <div id="main-view">
-        <h1>css styles</h1>
-        <p style="text-align: center;">click level to copy link</p>
-        <div id="list" class="grid"></div>
-    </div>
-
-    <div id="single-view" class="hidden"></div>
-
-    <script>
-        const levels = {
-            "10": { color: "#ff1a1a", percent: 100, elo: "2001+" },
-            "9":  { color: "#ff7b00", percent: 75,  elo: "1751-2000" },
-            "8":  { color: "#ff7b00", percent: 50,  elo: "1531-1750" },
-            "7":  { color: "#ffb800", percent: 75,  elo: "1351-1530" },
-            "6":  { color: "#ffb800", percent: 50,  elo: "1201-1350" },
-            "5":  { color: "#ffb800", percent: 35,  elo: "1051-1200" },
-            "4":  { color: "#ffb800", percent: 20,  elo: "901-1050" },
-            "3":  { color: "#00ff7f", percent: 30,  elo: "751-900" },
-            "2":  { color: "#00ff7f", percent: 15,  elo: "501-750" },
-            "1":  { color: "#ffffff", percent: 0,   elo: "100-500" }
-        };
-
-        function generateSVG(lvl, customElo) {
-            const data = levels[lvl] || levels["1"];
-            const elo = customElo || data.elo;
-            
-            
-            const radius = 18;
-            const circumference = 2 * Math.PI * radius; 
-            const gap = circumference * 0.25; 
-            const availableSpace = circumference - gap;
-            const dash = (data.percent / 100) * availableSpace;
-
-            return `
 <svg width="250" height="50" viewBox="0 0 250 50" fill="none" xmlns="http://w3.org">
-    <circle cx="25" cy="25" r="22" fill="#1e1e1e"/>
-    
-    <circle cx="25" cy="25" r="18" stroke="#2d2d2d" stroke-width="4" fill="none" 
-        stroke-dasharray="${availableSpace} ${circumference}" 
-        stroke-dashoffset="0" 
-        transform="rotate(135 25 25)" />
-    
-    ${data.percent > 0 ? `
-    <circle cx="25" cy="25" r="18" stroke="${data.color}" stroke-width="4" fill="none" 
-        stroke-dasharray="${dash} ${circumference}" 
-        stroke-dashoffset="0" 
-        transform="rotate(135 25 25)" />
-    ` : ''}
-    <circle cx="25" cy="25" r="14" fill="#1e1e1e"/>
-    <text x="25" y="31" text-anchor="middle" fill="${data.color}" 
-        style="font-family: Arial; font-weight: bold; font-size: 16px; transform: skewX(-10deg); transform-origin: 25px 25px;">${lvl}</text>
-    <text x="55" y="30" fill="black" style="font-family: Arial; font-weight: bold; font-size: 16px;">Level ${lvl}</text>
-    <text x="125" y="30" fill="#8e8e8e" style="font-family: Arial; font-size: 14px;">${elo}</text>
-    ${lvl === "1" ? '<circle cx="17" cy="33" r="2" fill="white"/>' : ''}
-</svg>`;
-        }
+    <foreignObject width="100%" height="100%">
+        <div xmlns="http://w3.org">
+            <style>
+                .container { display: flex; align-items: center; font-family: 'Segoe UI', Roboto, sans-serif; gap: 12px; height: 50px; background: white; }
+                .icon-box { position: relative; width: 40px; height: 40px; background: #1e1e1e; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+                .ring-base { position: absolute; inset: 4px; border-radius: 50%; border: 3px solid #2d2d2d; box-sizing: border-box; }
+                .ring-fill { position: absolute; inset: 4px; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--lvl-color); box-sizing: border-box; transform: rotate(var(--rotation)); }
+                .lvl-val { color: var(--lvl-color); font-weight: bold; font-size: 15px; transform: skewX(-10deg); z-index: 2; }
+                .text-data { font-weight: bold; font-size: 16px; color: #000; }
+                .elo-val { color: #8e8e8e; font-weight: normal; font-size: 14px; margin-left: 5px; }
+            </style>
 
-        const params = new URLSearchParams(window.location.search);
-        const userLvl = params.get('lvl');
-        const userElo = params.get('elo');
+            <div class="container" id="target">
+                <div class="icon-box">
+                    <div class="ring-base"></div>
+                    <div class="ring-fill" id="ring"></div>
+                    <div class="lvl-val" id="lvl-num">7</div>
+                </div>
+                <div class="text-data">Level <span id="lvl-txt">7</span> <span class="elo-val" id="elo-txt">1530 ELO</span></div>
+            </div>
 
-        if (userLvl) {
-           
-            document.getElementById('main-view').classList.add('hidden');
-            document.getElementById('single-view').classList.remove('hidden');
-            document.getElementById('single-view').innerHTML = generateSVG(userLvl, userElo);
-            document.body.style.background = "transparent";
-            document.body.style.padding = "0";
-        } else {
-            
-            const list = document.getElementById('list');
-            const baseUrl = window.location.origin + window.location.pathname;
+            <script><![CDATA[
+                const params = new URLSearchParams(window.location.search);
+                const lvl = params.get('lvl') || "7";
+                const elo = params.get('elo') || "1500";
+                
+                const colors = {
+                    "10": "#ff1a1a", "9": "#ff7b00", "8": "#ff7b00", "7": "#ffb800",
+                    "6": "#ffb800", "5": "#ffb800", "4": "#ffb800", "3": "#00ff7f",
+                    "2": "#00ff7f", "1": "#ffffff"
+                };
 
-            Object.keys(levels).reverse().forEach(lvl => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                const url = `${baseUrl}?lvl=${lvl}`;
-                card.innerHTML = `
-                    <div>${generateSVG(lvl)}</div>
-                    <div style="flex-grow: 1;">
-                        <input class="copy-input" readonly value="![Faceit](${url})" onclick="this.select(); document.execCommand('copy'); alert('Ссылка скопирована для GitHub!')">
-                    </div>
-                `;
-                list.appendChild(card);
-            });
-        }
-    </script>
-</body>
-</html>
+                const color = colors[lvl] || "#fff";
+                const root = document.getElementById('target');
+                
+                // Применяем переменные напрямую в CSS
+                root.style.setProperty('--lvl-color', color);
+                root.style.setProperty('--rotation', (lvl * 36) + 'deg');
+                
+                document.getElementById('lvl-num').textContent = lvl;
+                document.getElementById('lvl-txt').textContent = lvl;
+                document.getElementById('elo-txt').textContent = elo + " ELO";
+            ]]></script>
+        </div>
+    </foreignObject>
+</svg>
